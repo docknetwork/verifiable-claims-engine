@@ -1,0 +1,35 @@
+*.pyc
+.DS_Store
+venv*/
+virtual\ usb/
+secrets.py
+__pycache__
+
+certs_dbdump.csv
+
+data/unsigned_certificates/
+data/signed_certificates/
+data/blockchain_certificates/
+data/work/*
+
+!data/unsigned_certificates/.*
+!data/signed_certificates/.*
+!data/blockchain_certificates/.*
+!data/work/.*
+
+data*/*
+dist/*
+build/*
+
+requirements.txt
+.idea/*
+*.ini*
+pk_issuer.txt
+blockcerts testnet bitcoin address.txt
+.vscode/*
+.cache/*
+.tox/*
+*.egg-info/*
+docs/_build/*
+site/*
+priv*.txt
