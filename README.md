@@ -1,5 +1,7 @@
 # Verifiable Claims Engine
 
+![](https://github.com/docknetwork/verifiable-claims-engine/workflows/pytest/badge.svg)
+
 Python reference implementation of a verifiable claims issuing engine.
 
 
