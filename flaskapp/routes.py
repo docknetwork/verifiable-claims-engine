@@ -4,6 +4,7 @@ from voluptuous import Schema, REMOVE_EXTRA
 
 from blockcerts.const import ISSUER_SCHEMA, TEMPLATE_SCHEMA, RECIPIENT_SCHEMA
 from blockcerts.misc import issue_certificate_batch
+from flaskapp.config import get_config
 
 
 def setup_routes(app):
@@ -29,3 +30,13 @@ def setup_routes(app):
             [AttrDict(rec) for rec in payload['recipients']],
         )
         return jsonify(batch)
+
+    @app.route('/config', methods=['GET'])
+    def public_config():
+        config = get_config()
+        return jsonify(
+            dict(
+                ETH_PUBLIC_KEY=config.get('ETH_PUBLIC_KEY'),
+                ETH_KEY_CREATED_AT=config.get('ETH_KEY_CREATED_AT'),
+            )
+        )
