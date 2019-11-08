@@ -21,31 +21,6 @@ def write_private_key_file(private_key: str) -> None:
         private_key_file.write(private_key)
 
 
-# def bake_cert(issued_cert: IssuedCert) -> str:
-#     """Bake the contents of an issued cert into the template's PNG file."""
-# from openbadges_bakery import utils as bakery_utils
-
-#     write_temp_image(issued_cert.template.image)
-#     source_path = get_temp_filepath_for_image(issued_cert.template.image)
-#     destination_path = f"{DEFAULT_TEMP_IMAGE_DIR_PATH}/{get_temp_filename_for_baked_image(issued_cert)}"
-#     source = open(source_path, 'rb')
-#     destination = open(destination_path, 'wb')
-#
-#     bakery_utils.bake(
-#         source,
-#         json.dumps(issued_cert.contents),
-#         destination,
-#     )
-#
-#     return get_temp_filename_for_baked_image(issued_cert)
-
-
-# def unbake_cert(path_to_png_file: str) -> str:
-#     """Return the string stored inside a baked cert."""
-#     baked_image = open(path_to_png_file, 'rb')
-#     return bakery_utils.unbake(baked_image)
-
-
 def get_display_html_for_recipient(recipient: AttrDict, template: AttrDict, issuer: AttrDict) -> str:
     """Take the template's displayHtml and replace placeholders in it."""
     expiration = template.get('expires_at') or 'None'
@@ -66,12 +41,14 @@ def get_display_html_for_recipient(recipient: AttrDict, template: AttrDict, issu
     return result
 
 
-def issue_certificate_batch(issuer_data: AttrDict, template_data: AttrDict, recipients_data: List) -> List:
-    """The final step where all the blockcerts magic happens."""
+def issue_certificate_batch(issuer_data: AttrDict, template_data: AttrDict, recipients_data: List,
+                            job_data: AttrDict) -> List:
+    """Issue a batch of certificates and return them as a list."""
+    job_config = get_job_config(job_data)
     ensure_valid_issuer_data(issuer_data)
     ensure_valid_template_data(template_data)
-    tools_config = get_tools_config(issuer_data, template_data)
-    issuer_config = get_issuer_config(template_data)
+    tools_config = get_tools_config(issuer_data, template_data, job_config)
+    issuer_config = get_issuer_config(job_data, job_config)
     recipients = format_recipients(recipients_data, template_data, issuer_data)
     template = create_certificate_template(tools_config)
     unsigned_certs = create_unsigned_certificates_from_roster(
@@ -86,8 +63,18 @@ def issue_certificate_batch(issuer_data: AttrDict, template_data: AttrDict, reci
     return list(signed_certs.values())
 
 
-def get_tools_config(issuer: AttrDict, template: AttrDict) -> AttrDict:
+def get_job_config(job_data: AttrDict) -> AttrDict:
+    """Returns the overall config modified by inputs in the job section"""
     config = get_config()
+    config = AttrDict(dict((k.lower(), v) for k, v in config.items()))
+    if job_data.get('eth_public_key') and job_data.get('eth_private_key') and job_data.get('eth_key_created_at'):
+        config.eth_public_key = job_data.eth_public_key
+        config.eth_private_key = job_data.eth_private_key
+        config.eth_key_created_at = job_data.eth_key_created_at
+    return AttrDict(config)
+
+
+def get_tools_config(issuer: AttrDict, template: AttrDict, job_config: AttrDict) -> AttrDict:
     if template.get('expires_at'):
         template.additional_global_fields = template.additional_global_fields + (
             {"path": "$.expires", "value": template.get('expires_at')},
@@ -106,30 +93,32 @@ def get_tools_config(issuer: AttrDict, template: AttrDict) -> AttrDict:
         criteria_narrative=template.criteria_narrative,
         hash_emails=False,
         revocation_list_uri=issuer.revocation_list,
-        issuer_public_key=config.get('ETH_PUBLIC_KEY'),
+        issuer_public_key=job_config.get('eth_public_key'),
         badge_id=str(template.id),
         issuer_signature_lines=issuer.signature_lines,
         issuer_signature_file=issuer.signature_file,
         additional_global_fields=template.additional_global_fields,
         additional_per_recipient_fields=template.additional_per_recipient_fields,
         display_html=template.display_html,
-        public_key_created_at=config.get('ETH_KEY_CREATED_AT'),
+        public_key_created_at=job_config.get('eth_key_created_at'),
     )
 
 
-def get_issuer_config(template: AttrDict) -> AttrDict:
-    config = get_config()
+def get_issuer_config(job: AttrDict, job_config: AttrDict) -> AttrDict:
+    eth_public_key = job_config.get('eth_public_key').split(':')[1] if ":" in job_config.get(
+        'eth_public_key') else job_config.get('eth_public_key')
     return AttrDict(
-        issuing_address=config.get('ETH_PUBLIC_KEY').split(':')[1],
-        chain=template.blockchain,
+        issuing_address=eth_public_key,
+        chain=job.blockchain,
         usb_name=ETH_PRIVATE_KEY_PATH,
         key_file=ETH_PRIVATE_KEY_FILE_NAME,
+        eth_private_key=job_config.get('eth_private_key'),
         unsigned_certificates_dir="",
         blockchain_certificates_dir="",
         work_dir="",
         safe_mode=False,
-        gas_price=template.gas_price,
-        gas_limit=template.gas_limit,
+        gas_price=job.gas_price,
+        gas_limit=job.gas_limit,
         api_token="",
     )
 

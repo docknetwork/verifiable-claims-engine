@@ -30,10 +30,7 @@ TEMPLATE_SCHEMA = Schema(
         "additional_global_fields": list,
         "additional_per_recipient_fields": list,
         "display_html": str,
-        "blockchain": str,
         Optional("expires_at"): str,
-        Optional("gas_price"): int,
-        Optional("gas_limit"): int,
     },
     required=True,
     extra=REMOVE_EXTRA,
@@ -50,6 +47,18 @@ RECIPIENT_SCHEMA = Schema(
         ],
         Length(min=1)
     ),
+    required=True,
+    extra=REMOVE_EXTRA,
+)
+JOB_SCHEMA = Schema(
+    {
+        "blockchain": str,
+        Optional('eth_public_key'): str,
+        Optional('eth_private_key'): str,
+        Optional('eth_key_created_at'): str,
+        Optional("gas_price"): int,
+        Optional("gas_limit"): int,
+    },
     required=True,
     extra=REMOVE_EXTRA,
 )

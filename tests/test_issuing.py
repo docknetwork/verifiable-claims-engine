@@ -5,19 +5,26 @@ from blockcerts.const import RECIPIENT_NAME_KEY, RECIPIENT_EMAIL_KEY
 from blockcerts.misc import issue_certificate_batch, format_recipients
 
 
-def test_issuing(app, issuer, template, three_recipients):
-    issued_certs = issue_certificate_batch(issuer, template, three_recipients)
+def test_issuing(app, issuer, template, three_recipients, job):
+    issued_certs = issue_certificate_batch(issuer, template, three_recipients, job)
     assert isinstance(issued_certs, list)
     assert len(issued_certs) == 3
 
 
-def test_issuing_endpoint(app, issuer, template, three_recipients, json_client):
+def test_issuing_custom_keypair(app, issuer, template, three_recipients, job_custom_keypair_1):
+    issued_certs = issue_certificate_batch(issuer, template, three_recipients, job_custom_keypair_1)
+    assert isinstance(issued_certs, list)
+    assert len(issued_certs) == 3
+
+
+def test_issuing_endpoint(app, issuer, template, three_recipients, job, json_client):
     response = json_client.post(
         url_for('issue_certs', _external=True),
         data=dict(
             issuer=issuer,
             template=template,
             recipients=three_recipients,
+            job=job
         )
     )
     assert isinstance(response.json, list)
@@ -27,13 +34,14 @@ def test_issuing_endpoint(app, issuer, template, three_recipients, json_client):
     assert 'expires' not in response.json[2].keys()
 
 
-def test_issuing_endpoint_empty_recipients(app, issuer, template, json_client):
+def test_issuing_endpoint_empty_recipients(app, issuer, template, job, json_client):
     response = json_client.post(
         url_for('issue_certs', _external=True),
         data=dict(
             issuer=issuer,
             template=template,
             recipients=[],
+            job=job
         )
     )
     assert response.status_code == 400
@@ -43,7 +51,7 @@ def test_issuing_endpoint_empty_recipients(app, issuer, template, json_client):
 @pytest.mark.parametrize("missing_key",
                          ["name", "main_url", "id", "email", "logo_file", "revocation_list", "intro_url",
                           "signature_lines", "signature_file"])
-def test_issuing_endpoint_issuer_missing_field(app, issuer, template, three_recipients, json_client, missing_key):
+def test_issuing_endpoint_issuer_missing_field(app, issuer, template, three_recipients, job, json_client, missing_key):
     issuer.pop(missing_key)
     assert missing_key not in issuer.keys()
     response = json_client.post(
@@ -52,6 +60,7 @@ def test_issuing_endpoint_issuer_missing_field(app, issuer, template, three_reci
             issuer=issuer,
             template=template,
             recipients=three_recipients,
+            job=job
         )
     )
     assert response.status_code == 400
@@ -60,8 +69,9 @@ def test_issuing_endpoint_issuer_missing_field(app, issuer, template, three_reci
 
 @pytest.mark.parametrize("missing_key",
                          ["id", "title", "description", "criteria_narrative", "image", "additional_global_fields",
-                          "additional_per_recipient_fields", "display_html", "blockchain"])
-def test_issuing_endpoint_template_missing_field(app, issuer, template, three_recipients, json_client, missing_key):
+                          "additional_per_recipient_fields", "display_html"])
+def test_issuing_endpoint_template_missing_field(app, issuer, template, three_recipients, job, json_client,
+                                                 missing_key):
     template.pop(missing_key)
     assert missing_key not in template.keys()
     response = json_client.post(
@@ -70,14 +80,32 @@ def test_issuing_endpoint_template_missing_field(app, issuer, template, three_re
             issuer=issuer,
             template=template,
             recipients=three_recipients,
+            job=job
         )
     )
     assert response.status_code == 400
     assert response.json['details'] == f"required key not provided @ data['template']['{missing_key}']"
 
 
+def test_issuing_endpoint_job_missing_field(app, issuer, template, three_recipients, job, json_client):
+    job.pop('blockchain')
+    assert 'blockchain' not in job.keys()
+    response = json_client.post(
+        url_for('issue_certs', _external=True),
+        data=dict(
+            issuer=issuer,
+            template=template,
+            recipients=three_recipients,
+            job=job
+        )
+    )
+    assert response.status_code == 400
+    assert response.json['details'] == f"required key not provided @ data['job']['blockchain']"
+
+
 @pytest.mark.parametrize("missing_key", ["name", "identity", "pubkey", "additional_fields"])
-def test_issuing_endpoint_recipient_missing_field(app, issuer, template, three_recipients, json_client, missing_key):
+def test_issuing_endpoint_recipient_missing_field(app, issuer, template, three_recipients, job, json_client,
+                                                  missing_key):
     three_recipients[0].pop(missing_key)
     response = json_client.post(
         url_for('issue_certs', _external=True),
@@ -85,13 +113,14 @@ def test_issuing_endpoint_recipient_missing_field(app, issuer, template, three_r
             issuer=issuer,
             template=template,
             recipients=three_recipients,
+            job=job
         )
     )
     assert response.status_code == 400
     assert response.json['details'] == f"required key not provided @ data['recipients'][0]['{missing_key}']"
 
 
-def test_issuing_endpoint_with_expiration(app, issuer, template, three_recipients, json_client):
+def test_issuing_endpoint_with_expiration(app, issuer, template, three_recipients, job, json_client):
     template.expires_at = "2028-02-07T23:52:16.636+00:00"
     response = json_client.post(
         url_for('issue_certs', _external=True),
@@ -99,6 +128,7 @@ def test_issuing_endpoint_with_expiration(app, issuer, template, three_recipient
             issuer=issuer,
             template=template,
             recipients=three_recipients,
+            job=job
         )
     )
     assert isinstance(response.json, list)
@@ -120,3 +150,45 @@ def test_recipient_specific_html_creation(app, issuer, template, three_recipient
                                                                         f'"{recipient.get(RECIPIENT_EMAIL_KEY)}" - "')
         assert recipient['additional_fields']['displayHtml'].endswith(f'"{template.expires_at}"  "{template.title}" '
                                                                       f'"{template.description}"')
+
+
+def test_issuing_endpoint_custom_keys(app, issuer, template, three_recipients, json_client, job, job_custom_keypair_1,
+                                      job_custom_keypair_2):
+    response = json_client.post(
+        url_for('issue_certs', _external=True),
+        data=dict(
+            issuer=issuer,
+            template=template,
+            recipients=three_recipients,
+            job=job
+        )
+    )
+    assert isinstance(response.json, list)
+    assert len(response.json) == 3
+
+    response_1 = json_client.post(
+        url_for('issue_certs', _external=True),
+        data=dict(
+            issuer=issuer,
+            template=template,
+            recipients=three_recipients,
+            job=job_custom_keypair_1
+        )
+    )
+    assert isinstance(response_1.json, list)
+    assert len(response_1.json) == 3
+
+    response_2 = json_client.post(
+        url_for('issue_certs', _external=True),
+        data=dict(
+            issuer=issuer,
+            template=template,
+            recipients=three_recipients,
+            job=job_custom_keypair_2
+        )
+    )
+    assert isinstance(response_2.json, list)
+    assert len(response_2.json) == 3
+
+    assert response.json[0]['verification']['publicKey'] != response_1.json[0]['verification']['publicKey'] != \
+           response_2.json[0]['verification']['publicKey']

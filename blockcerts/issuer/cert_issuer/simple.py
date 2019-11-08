@@ -54,8 +54,9 @@ class SimplifiedCertificateBatchIssuer:
         self.transaction_handler = SimplifiedEthereumTransactionHandler(
             chain=self.config.original_chain.split('_')[1],
             path_to_secret=self.path_to_secret,
+            private_key=self.config.get('eth_private_key'),
             recommended_max_cost=self.config.gas_price * self.config.gas_limit,
-            account_from=self.config.issuing_address,
+            account_from=self.config.get('eth_public_key') or self.config.issuing_address,
         )
         tx_id = self.transaction_handler.issue_transaction(self.merkle_root)
         return tx_id
@@ -74,6 +75,7 @@ class SimplifiedEthereumTransactionHandler:
             self,
             chain: str,
             path_to_secret: str,
+            private_key: str,
             recommended_max_cost: int,
             account_from: str,
             account_to: str = '0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD',
@@ -91,7 +93,7 @@ class SimplifiedEthereumTransactionHandler:
         assert self.web3.isConnected()
 
         self._ensure_balance(recommended_max_cost)
-        self.private_key = self._read_private_key()
+        self.private_key = private_key or self._read_private_key()
 
     def issue_transaction(self, merkle_root: str, gas_price: int = 20000000000, gas_limit: int = 25000) -> str:
         """Broadcast a transaction with the merkle root as data and return the transaction id."""
