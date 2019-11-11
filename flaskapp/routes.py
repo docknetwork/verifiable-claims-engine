@@ -2,7 +2,7 @@ from attrdict import AttrDict
 from flask import jsonify, request
 from voluptuous import Schema, REMOVE_EXTRA
 
-from blockcerts.const import ISSUER_SCHEMA, TEMPLATE_SCHEMA, RECIPIENT_SCHEMA
+from blockcerts.const import ISSUER_SCHEMA, TEMPLATE_SCHEMA, RECIPIENT_SCHEMA, JOB_SCHEMA
 from blockcerts.misc import issue_certificate_batch
 from flaskapp.config import get_config
 
@@ -19,6 +19,7 @@ def setup_routes(app):
                 'issuer': ISSUER_SCHEMA,
                 'template': TEMPLATE_SCHEMA,
                 'recipients': RECIPIENT_SCHEMA,
+                'job': JOB_SCHEMA,
             },
             required=True,
             extra=REMOVE_EXTRA,
@@ -28,6 +29,7 @@ def setup_routes(app):
             AttrDict(payload['issuer']),
             AttrDict(payload['template']),
             [AttrDict(rec) for rec in payload['recipients']],
+            AttrDict(payload['job']),
         )
         return jsonify(batch)
 

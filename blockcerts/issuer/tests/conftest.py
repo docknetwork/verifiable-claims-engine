@@ -76,6 +76,20 @@ def config():
 
 
 @pytest.fixture
+def config_priv(config):
+    yield AttrDict(
+        dict(
+            config,
+            issuing_address=os.environ.get('ETH_PUBLIC_KEY_2'),
+            eth_public_key=os.environ.get('ETH_PUBLIC_KEY_2'),
+            eth_private_key=os.environ.get('ETH_PRIVATE_KEY_2'),
+            key_file='',
+            unsigned_certificates_dir='',
+        )
+    )
+
+
+@pytest.fixture
 def write_private_key_file(config):
     key_path = config.usb_name + config.key_file
     with open(key_path, 'w') as key_handle:
