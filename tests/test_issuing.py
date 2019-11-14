@@ -1,4 +1,8 @@
+import json
+from hashlib import sha256
+
 import pytest
+from attrdict import AttrDict
 from flask import url_for
 
 from blockcerts.const import RECIPIENT_NAME_KEY, RECIPIENT_EMAIL_KEY
@@ -192,3 +196,43 @@ def test_issuing_endpoint_custom_keys(app, issuer, template, three_recipients, j
 
     assert response.json[0]['verification']['publicKey'] != response_1.json[0]['verification']['publicKey'] != \
            response_2.json[0]['verification']['publicKey']
+
+
+def test_issuing_hashed(app, issuer, template, three_recipients, job):
+    def my_hash(val):
+        return sha256(val.encode('utf-8')).hexdigest()
+
+    def hash_values_not_keys(raw_value):
+        NOT_HASHABLE_KEYS = ['additional_global_fields', 'additional_per_recipient_fields', 'id', 'revocation_list']
+        newdict = {}
+        for k, v in raw_value.items():
+            if k in NOT_HASHABLE_KEYS:
+                newdict[k] = v
+                continue
+            if isinstance(v, list):
+                newdict[k] = []
+                for member in v:
+                    if isinstance(member, dict):
+                        newdict[k].append(hash_values_not_keys(member))
+                    else:
+                        newdict[k].append(my_hash(member))
+            elif isinstance(v, dict):
+                newdict[k] = hash_values_not_keys(v)
+            else:
+                newdict[k] = my_hash(v)
+        return newdict
+
+    issued_certs = issue_certificate_batch(issuer, template, three_recipients, job)
+    assert isinstance(issued_certs, list)
+    assert len(issued_certs) == 3
+    with open('issued_certs.json', 'w') as the_file:
+        the_file.write(json.dumps(issued_certs))
+
+    hashed_issuer = AttrDict(hash_values_not_keys(issuer))
+    hashed_template = AttrDict(hash_values_not_keys(template))
+    hashed_three_recipients = [AttrDict(hash_values_not_keys(member)) for member in three_recipients]
+    hashed_issued_certs = issue_certificate_batch(hashed_issuer, hashed_template, hashed_three_recipients, job)
+    assert isinstance(hashed_issued_certs, list)
+    assert len(hashed_issued_certs) == 3
+    with open('hashed_issued_certs.json', 'w') as the_file:
+        the_file.write(json.dumps(hashed_issued_certs))
