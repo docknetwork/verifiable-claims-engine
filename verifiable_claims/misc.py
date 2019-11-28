@@ -1,18 +1,16 @@
 import copy
-from datetime import datetime
 from typing import List
 
 from attrdict import AttrDict
 
-from verifiable_claims.const import HTML_DATE_FORMAT, PLACEHOLDER_RECIPIENT_NAME, PLACEHOLDER_RECIPIENT_EMAIL, \
-    PLACEHOLDER_ISSUING_DATE, PLACEHOLDER_ISSUER_LOGO, PLACEHOLDER_ISSUER_SIGNATURE_FILE, PLACEHOLDER_EXPIRATION_DATE, \
-    PLACEHOLDER_CERT_TITLE, PLACEHOLDER_CERT_DESCRIPTION, ETH_PRIVATE_KEY_PATH, ETH_PRIVATE_KEY_FILE_NAME, \
+from flaskapp.config import get_config
+from flaskapp.errors import ValidationError
+from verifiable_claims.const import PLACEHOLDER_RECIPIENT_NAME, PLACEHOLDER_RECIPIENT_EMAIL, \
+    ETH_PRIVATE_KEY_PATH, ETH_PRIVATE_KEY_FILE_NAME, \
     HTML_PLACEHOLDERS, RECIPIENT_NAME_KEY, RECIPIENT_EMAIL_KEY
 from verifiable_claims.issuer.cert_issuer.simple import SimplifiedCertificateBatchIssuer
 from verifiable_claims.tools.cert_tools.create_v2_certificate_template import create_certificate_template
 from verifiable_claims.tools.cert_tools.instantiate_v2_certificate_batch import create_unsigned_certificates_from_roster
-from flaskapp.config import get_config
-from flaskapp.errors import ValidationError
 
 
 def write_private_key_file(private_key: str) -> None:
@@ -23,17 +21,10 @@ def write_private_key_file(private_key: str) -> None:
 
 def get_display_html_for_recipient(recipient: AttrDict, template: AttrDict, issuer: AttrDict) -> str:
     """Take the template's displayHtml and replace placeholders in it."""
-    expiration = template.get('expires_at') or 'None'
     result = copy.deepcopy(template.display_html)
     replacements = [
         (PLACEHOLDER_RECIPIENT_NAME, recipient.get(RECIPIENT_NAME_KEY)),
-        (PLACEHOLDER_RECIPIENT_EMAIL, recipient.get(RECIPIENT_EMAIL_KEY)),
-        (PLACEHOLDER_ISSUING_DATE, datetime.utcnow().strftime(HTML_DATE_FORMAT)),
-        (PLACEHOLDER_ISSUER_LOGO, str(issuer.logo_file)),
-        (PLACEHOLDER_ISSUER_SIGNATURE_FILE, issuer.signature_file),
-        (PLACEHOLDER_EXPIRATION_DATE, expiration),
-        (PLACEHOLDER_CERT_TITLE, template.title),
-        (PLACEHOLDER_CERT_DESCRIPTION, template.description),
+        (PLACEHOLDER_RECIPIENT_EMAIL, recipient.get(RECIPIENT_EMAIL_KEY))
     ]
     for key, value in replacements:
         if value:

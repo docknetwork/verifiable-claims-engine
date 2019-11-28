@@ -140,16 +140,12 @@ def test_issuing_endpoint_with_expiration(app, issuer, template, three_recipient
 
 def test_recipient_specific_html_creation(app, issuer, template, three_recipients, json_client):
     template.expires_at = "2028-02-07T23:52:16.636+00:00"
-    template.display_html = '"%RECIPIENT_NAME%" - "%RECIPIENT_EMAIL%" - "%ISSUING_DATE%" "%ISSUER_LOGO%" ' \
-                            '"%ISSUER_SIGNATURE_FILE%" "%EXPIRATION_DATE%"  "%CERT_TITLE%" "%CERT_DESCRIPTION%"'
+    template.display_html = '"%RECIPIENT_NAME%" - "%RECIPIENT_EMAIL%"'
     for recipient in three_recipients:
         assert not recipient['additional_fields']['displayHtml']
     recipients = format_recipients(three_recipients, template, issuer)
     for recipient in recipients:
-        assert recipient['additional_fields']['displayHtml'].startswith(f'"{recipient.get(RECIPIENT_NAME_KEY)}" - '
-                                                                        f'"{recipient.get(RECIPIENT_EMAIL_KEY)}" - "')
-        assert recipient['additional_fields']['displayHtml'].endswith(f'"{template.expires_at}"  "{template.title}" '
-                                                                      f'"{template.description}"')
+        assert recipient['additional_fields']['displayHtml'] == f'"{recipient.get(RECIPIENT_NAME_KEY)}" - "{recipient.get(RECIPIENT_EMAIL_KEY)}"'
 
 
 def test_issuing_endpoint_custom_keys(app, issuer, template, three_recipients, json_client, job, job_custom_keypair_1,
