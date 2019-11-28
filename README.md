@@ -17,7 +17,7 @@ Additionally, the code has been composed into a dockerized, easy to use and well
 
 ## Module-specific Readmes
 
-- [Claims issuing](blockcerts/README.md)
+- [Claims issuing](verifiable_claims/README.md)
 - [Cost](cost/README.md)
 - [Bidding](bidding/README.md)
 

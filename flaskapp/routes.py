@@ -2,8 +2,8 @@ from attrdict import AttrDict
 from flask import jsonify, request
 from voluptuous import Schema, REMOVE_EXTRA
 
-from blockcerts.const import ISSUER_SCHEMA, TEMPLATE_SCHEMA, RECIPIENT_SCHEMA, JOB_SCHEMA
-from blockcerts.misc import issue_certificate_batch
+from verifiable_claims.const import ISSUER_SCHEMA, TEMPLATE_SCHEMA, RECIPIENT_SCHEMA, JOB_SCHEMA
+from verifiable_claims.misc import issue_certificate_batch
 from flaskapp.config import get_config
 
 

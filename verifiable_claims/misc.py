@@ -4,13 +4,13 @@ from typing import List
 
 from attrdict import AttrDict
 
-from blockcerts.const import HTML_DATE_FORMAT, PLACEHOLDER_RECIPIENT_NAME, PLACEHOLDER_RECIPIENT_EMAIL, \
+from verifiable_claims.const import HTML_DATE_FORMAT, PLACEHOLDER_RECIPIENT_NAME, PLACEHOLDER_RECIPIENT_EMAIL, \
     PLACEHOLDER_ISSUING_DATE, PLACEHOLDER_ISSUER_LOGO, PLACEHOLDER_ISSUER_SIGNATURE_FILE, PLACEHOLDER_EXPIRATION_DATE, \
     PLACEHOLDER_CERT_TITLE, PLACEHOLDER_CERT_DESCRIPTION, ETH_PRIVATE_KEY_PATH, ETH_PRIVATE_KEY_FILE_NAME, \
     HTML_PLACEHOLDERS, RECIPIENT_NAME_KEY, RECIPIENT_EMAIL_KEY
-from blockcerts.issuer.cert_issuer.simple import SimplifiedCertificateBatchIssuer
-from blockcerts.tools.cert_tools.create_v2_certificate_template import create_certificate_template
-from blockcerts.tools.cert_tools.instantiate_v2_certificate_batch import create_unsigned_certificates_from_roster
+from verifiable_claims.issuer.cert_issuer.simple import SimplifiedCertificateBatchIssuer
+from verifiable_claims.tools.cert_tools.create_v2_certificate_template import create_certificate_template
+from verifiable_claims.tools.cert_tools.instantiate_v2_certificate_batch import create_unsigned_certificates_from_roster
 from flaskapp.config import get_config
 from flaskapp.errors import ValidationError
 

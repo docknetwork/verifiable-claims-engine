@@ -50,9 +50,21 @@ RECIPIENT_SCHEMA = Schema(
     required=True,
     extra=REMOVE_EXTRA,
 )
+OUTPUT_SCHEMA = Schema(
+    All(
+        [
+            {
+                'type': str,
+                'version': str,
+            }
+        ],
+        Length(min=1)
+    )
+)
 JOB_SCHEMA = Schema(
     {
         "blockchain": str,
+        "output": OUTPUT_SCHEMA,
         Optional('eth_public_key'): str,
         Optional('eth_private_key'): str,
         Optional('eth_key_created_at'): str,

@@ -2,7 +2,7 @@ from typing import Dict
 
 from flask import Flask
 
-from blockcerts.misc import write_private_key_file
+from verifiable_claims.misc import write_private_key_file
 from flaskapp.config import parse_config, set_config
 from flaskapp.errors import register_errors
 from flaskapp.routes import setup_routes

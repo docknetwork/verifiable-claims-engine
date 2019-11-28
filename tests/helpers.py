@@ -5,7 +5,7 @@ from typing import Dict
 from flask import Response
 from werkzeug.test import Client
 
-from blockcerts.const import DEFAULT_ENCODING
+from verifiable_claims.const import DEFAULT_ENCODING
 
 
 class JsonFlaskClient:

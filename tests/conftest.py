@@ -114,6 +114,7 @@ def job() -> Dict:
             blockchain="ethereum_ropsten",
             gas_price=20000000000,
             gas_limit=25000,  # Less than this won't work!
+            output=[{'type': 'blockcerts', 'version': '2'}]
         )
     )
 

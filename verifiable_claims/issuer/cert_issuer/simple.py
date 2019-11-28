@@ -8,7 +8,7 @@ from cert_schema import normalize_jsonld
 from eth_account.datastructures import AttributeDict
 from web3 import Web3
 
-from blockcerts.issuer.cert_issuer.helpers import _get_random_from_csv
+from verifiable_claims.issuer.cert_issuer.helpers import _get_random_from_csv
 
 
 class SimplifiedCertificateBatchIssuer:

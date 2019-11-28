@@ -1,8 +1,8 @@
 import pytest
 from flask import url_for
 
-from blockcerts.const import RECIPIENT_NAME_KEY, RECIPIENT_EMAIL_KEY
-from blockcerts.misc import issue_certificate_batch, format_recipients
+from verifiable_claims.const import RECIPIENT_NAME_KEY, RECIPIENT_EMAIL_KEY
+from verifiable_claims.misc import issue_certificate_batch, format_recipients
 
 
 def test_issuing(app, issuer, template, three_recipients, job):
