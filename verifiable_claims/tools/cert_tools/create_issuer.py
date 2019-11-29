@@ -11,7 +11,7 @@ import datetime
 
 import configargparse
 
-from cert_tools import helpers
+from verifiable_claims.tools.cert_tools import helpers
 
 def generate_issuer_file(config):
     output_handle = open(config.output_file, 'w') if config.output_file else sys.stdout

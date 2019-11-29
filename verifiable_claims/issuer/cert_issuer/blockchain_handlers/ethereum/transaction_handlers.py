@@ -2,10 +2,10 @@ import logging
 
 from pycoin.serialize import b2h
 
-from cert_issuer.errors import InsufficientFundsError
-from cert_issuer.blockchain_handlers.ethereum import tx_utils
-from cert_issuer.models import TransactionHandler
-from cert_issuer.signer import FinalizableSigner
+from verifiable_claims.issuer.cert_issuer.errors import InsufficientFundsError
+from verifiable_claims.issuer.cert_issuer.blockchain_handlers.ethereum import tx_utils
+from verifiable_claims.issuer.cert_issuer.models import TransactionHandler
+from verifiable_claims.issuer.cert_issuer.signer import FinalizableSigner
 
 
 # as the transaction format in Ethereum is different, the abstracted TransactionCreator doesn't satisfy

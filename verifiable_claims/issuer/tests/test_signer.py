@@ -1,7 +1,7 @@
 import unittest
 import mock
 
-from cert_issuer.signer import FinalizableSigner
+from verifiable_claims.issuer.cert_issuer.signer import FinalizableSigner
 
 
 class TestSigner(unittest.TestCase):

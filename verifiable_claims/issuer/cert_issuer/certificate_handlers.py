@@ -3,11 +3,11 @@ import logging
 
 from cert_schema import normalize_jsonld
 from cert_schema import validate_v2
-from cert_issuer import helpers
+from verifiable_claims.issuer.cert_issuer import helpers
 from pycoin.serialize import b2h
-from cert_issuer.models import CertificateHandler, BatchHandler
+from verifiable_claims.issuer.cert_issuer.models import CertificateHandler, BatchHandler
 
-from cert_issuer.signer import FinalizableSigner
+from verifiable_claims.issuer.cert_issuer.signer import FinalizableSigner
 
 class CertificateV2Handler(CertificateHandler):
     def get_byte_array_to_issue(self, certificate_metadata):

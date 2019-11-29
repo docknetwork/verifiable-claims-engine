@@ -63,7 +63,7 @@ def config():
     yield AttrDict(
         issuing_address=os.environ.get('ETH_PUBLIC_KEY').split(":")[1],
         chain="ethereum_ropsten",
-        usb_name="/app/blockcerts/issuer/",
+        usb_name="/app/verifiable_claims/issuer/",
         key_file="private_key",
         unsigned_certificates_dir="../issuer/data/unsigned_certificates",
         blockchain_certificates_dir="../issuer/data/blockchain_certificates",

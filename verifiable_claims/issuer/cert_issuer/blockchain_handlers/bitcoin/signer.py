@@ -8,9 +8,9 @@ from pycoin.encoding import wif_to_secret_exponent
 from pycoin.networks import wif_prefix_for_netcode
 from pycoin.tx.pay_to import build_hash160_lookup
 
-from cert_issuer.errors import UnverifiedSignatureError, UnableToSignTxError
-from cert_issuer.helpers import to_pycoin_chain
-from cert_issuer.models import Signer
+from verifiable_claims.issuer.cert_issuer.errors import UnverifiedSignatureError, UnableToSignTxError
+from verifiable_claims.issuer.cert_issuer.helpers import to_pycoin_chain
+from verifiable_claims.issuer.cert_issuer.models import Signer
 
 
 class BitcoinSigner(Signer):

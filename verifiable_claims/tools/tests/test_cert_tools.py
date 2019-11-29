@@ -1,9 +1,9 @@
 import json
 import os
 
-from cert_tools.create_v2_certificate_template import create_certificate_template
-from cert_tools.create_v2_issuer import generate_issuer, generate_issuer_file
-from cert_tools.instantiate_v2_certificate_batch import create_unsigned_certificates_from_roster
+from verifiable_claims.tools.cert_tools.create_v2_certificate_template import create_certificate_template
+from verifiable_claims.tools.cert_tools.create_v2_issuer import generate_issuer, generate_issuer_file
+from verifiable_claims.tools.cert_tools.instantiate_v2_certificate_batch import create_unsigned_certificates_from_roster
 
 
 def test_create_v2_certificate_template_no_files(config_no_files):

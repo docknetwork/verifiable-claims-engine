@@ -6,7 +6,7 @@ import sys
 from setuptools import find_packages
 from setuptools import setup
 
-from cert_issuer import __version__
+from verifiable_claims.issuer.cert_issuer import __version__
 
 here = os.path.abspath(os.path.dirname(__file__))
 

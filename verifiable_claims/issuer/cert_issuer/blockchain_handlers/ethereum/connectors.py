@@ -10,8 +10,8 @@ except ImportError:
     from urllib.parse import urlencode
 
 from cert_core import Chain
-from cert_issuer.models import ServiceProviderConnector
-from cert_issuer.errors import BroadcastError
+from verifiable_claims.issuer.cert_issuer.models import ServiceProviderConnector
+from verifiable_claims.issuer.cert_issuer.errors import BroadcastError
 
 
 class EthereumServiceProviderConnector(ServiceProviderConnector):

@@ -4,13 +4,13 @@ import os
 from cert_core import BlockchainType
 from cert_core import Chain, UnknownChainError
 
-from cert_issuer.blockchain_handlers.bitcoin.connectors import BitcoinServiceProviderConnector, MockServiceProviderConnector
-from cert_issuer.blockchain_handlers.bitcoin.signer import BitcoinSigner
-from cert_issuer.blockchain_handlers.bitcoin.transaction_handlers import BitcoinTransactionHandler
-from cert_issuer.certificate_handlers import CertificateBatchHandler, CertificateV2Handler, CertificateBatchWebHandler, CertificateWebV2Handler
-from cert_issuer.merkle_tree_generator import MerkleTreeGenerator
-from cert_issuer.models import MockTransactionHandler
-from cert_issuer.signer import FileSecretManager
+from verifiable_claims.issuer.cert_issuer.blockchain_handlers.bitcoin.connectors import BitcoinServiceProviderConnector, MockServiceProviderConnector
+from verifiable_claims.issuer.cert_issuer.blockchain_handlers.bitcoin.signer import BitcoinSigner
+from verifiable_claims.issuer.cert_issuer.blockchain_handlers.bitcoin.transaction_handlers import BitcoinTransactionHandler
+from verifiable_claims.issuer.cert_issuer.certificate_handlers import CertificateBatchHandler, CertificateV2Handler, CertificateBatchWebHandler, CertificateWebV2Handler
+from verifiable_claims.issuer.cert_issuer.merkle_tree_generator import MerkleTreeGenerator
+from verifiable_claims.issuer.cert_issuer.models import MockTransactionHandler
+from verifiable_claims.issuer.cert_issuer.signer import FileSecretManager
 
 COIN = 100000000  # satoshis in 1 btc
 

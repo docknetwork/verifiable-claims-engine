@@ -3,7 +3,7 @@ import unittest
 from cert_core import Chain
 from pycoin.serialize import b2h
 
-from cert_issuer.merkle_tree_generator import MerkleTreeGenerator
+from verifiable_claims.issuer.cert_issuer.merkle_tree_generator import MerkleTreeGenerator
 
 
 def get_test_data_generator():

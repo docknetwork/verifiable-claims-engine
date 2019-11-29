@@ -6,9 +6,9 @@ import io
 from pycoin.serialize import b2h
 from mock import patch, mock_open
 
-from cert_issuer.certificate_handlers import CertificateWebV2Handler, CertificateV2Handler, CertificateBatchHandler, CertificateHandler, CertificateBatchWebHandler
-from cert_issuer.merkle_tree_generator import MerkleTreeGenerator
-from cert_issuer import helpers
+from verifiable_claims.issuer.cert_issuer.certificate_handlers import CertificateWebV2Handler, CertificateV2Handler, CertificateBatchHandler, CertificateHandler, CertificateBatchWebHandler
+from verifiable_claims.issuer.cert_issuer.merkle_tree_generator import MerkleTreeGenerator
+from verifiable_claims.issuer.cert_issuer import helpers
 from mock import ANY
 
 class TestCertificateHandler(unittest.TestCase):

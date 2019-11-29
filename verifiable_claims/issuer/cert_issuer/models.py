@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from cert_issuer.config import ESTIMATE_NUM_INPUTS
+from verifiable_claims.issuer.cert_issuer.config import ESTIMATE_NUM_INPUTS
 
 class BatchHandler(object):
     def __init__(self, secret_manager, certificate_handler, merkle_tree):

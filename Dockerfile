@@ -17,6 +17,3 @@ RUN if [ $DEV -eq "1" ]; then \
         pip install -r requirements-dev.txt; \
     fi
 
-RUN cd /app/blockcerts/tools && pip install .
-RUN cd /app/blockcerts/issuer && pip install . && python setup.py experimental --blockchain=ethereum
-

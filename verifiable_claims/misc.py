@@ -19,7 +19,7 @@ def write_private_key_file(private_key: str) -> None:
         private_key_file.write(private_key)
 
 
-def get_display_html_for_recipient(recipient: AttrDict, template: AttrDict, issuer: AttrDict) -> str:
+def get_display_html_for_recipient(recipient: AttrDict, template: AttrDict) -> str:
     """Take the template's displayHtml and replace placeholders in it."""
     result = copy.deepcopy(template.display_html)
     replacements = [
@@ -130,7 +130,5 @@ def format_recipients(recipients_data: List, template_data: AttrDict, issuer_dat
     """Replace placeholders with the right data the given template uses them in display_html."""
     if any(word in template_data.display_html for word in HTML_PLACEHOLDERS):
         for recipient in recipients_data:
-            recipient['additional_fields']['displayHtml'] = get_display_html_for_recipient(
-                recipient, template_data, issuer_data
-            )
+            recipient['additional_fields']['displayHtml'] = get_display_html_for_recipient(recipient, template_data)
     return recipients_data

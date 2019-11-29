@@ -4,13 +4,13 @@ import os
 from cert_core import BlockchainType
 from cert_core import Chain, UnknownChainError
 
-from cert_issuer.certificate_handlers import CertificateBatchHandler, CertificateV2Handler
-from cert_issuer.blockchain_handlers.ethereum.connectors import EthereumServiceProviderConnector
-from cert_issuer.blockchain_handlers.ethereum.signer import EthereumSigner
-from cert_issuer.blockchain_handlers.ethereum.transaction_handlers import EthereumTransactionHandler
-from cert_issuer.merkle_tree_generator import MerkleTreeGenerator
-from cert_issuer.models import MockTransactionHandler
-from cert_issuer.signer import FileSecretManager
+from verifiable_claims.issuer.cert_issuer.certificate_handlers import CertificateBatchHandler, CertificateV2Handler
+from verifiable_claims.issuer.cert_issuer.blockchain_handlers.ethereum.connectors import EthereumServiceProviderConnector
+from verifiable_claims.issuer.cert_issuer.blockchain_handlers.ethereum.signer import EthereumSigner
+from verifiable_claims.issuer.cert_issuer.blockchain_handlers.ethereum.transaction_handlers import EthereumTransactionHandler
+from verifiable_claims.issuer.cert_issuer.merkle_tree_generator import MerkleTreeGenerator
+from verifiable_claims.issuer.cert_issuer.models import MockTransactionHandler
+from verifiable_claims.issuer.cert_issuer.signer import FileSecretManager
 
 
 class EthereumTransactionCostConstants(object):

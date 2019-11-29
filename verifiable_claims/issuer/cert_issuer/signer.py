@@ -4,7 +4,7 @@ import time
 
 import requests
 
-from cert_issuer.models import SecretManager
+from verifiable_claims.issuer.cert_issuer.models import SecretManager
 
 
 class FileSecretManager(SecretManager):

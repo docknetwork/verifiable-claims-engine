@@ -1,6 +1,6 @@
 import logging
 
-from cert_issuer.errors import UnverifiedTransactionError
+from verifiable_claims.issuer.cert_issuer.errors import UnverifiedTransactionError
 
 
 def create_ethereum_trx(issuing_address, nonce, to_address, blockchain_bytes, gasprice, gaslimit):
