@@ -3,7 +3,7 @@ Base class for building blockchain transactions to issue Blockchain Certificates
 """
 import logging
 
-from verifiable_claims.issuer.cert_issuer.errors import BroadcastError
+from verifiable_claims.issuer.errors import BroadcastError
 
 MAX_TX_RETRIES = 5
 

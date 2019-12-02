@@ -3,7 +3,7 @@ import sys
 
 from cert_core import Chain
 
-from verifiable_claims.issuer.cert_issuer.issuer import Issuer
+from verifiable_claims.issuer.issuer import Issuer
 
 if sys.version_info.major < 3:
     sys.stderr.write('Sorry, Python 3.x required by this script.\n')
@@ -28,16 +28,16 @@ def issue(app_config, certificate_batch_handler, transaction_handler):
 def main(app_config):
     chain = app_config.chain
     if chain == Chain.ethereum_mainnet or chain == Chain.ethereum_ropsten:
-        from verifiable_claims.issuer.cert_issuer.blockchain_handlers import ethereum
+        from verifiable_claims.issuer.blockchain_handlers.blockchain_handlers import ethereum
         certificate_batch_handler, transaction_handler, connector = ethereum.instantiate_blockchain_handlers(app_config)
     else:
-        from verifiable_claims.issuer.cert_issuer.blockchain_handlers import bitcoin
+        from verifiable_claims.issuer.blockchain_handlers import bitcoin
         certificate_batch_handler, transaction_handler, connector = bitcoin.instantiate_blockchain_handlers(app_config)
     return issue(app_config, certificate_batch_handler, transaction_handler)
 
 
 if __name__ == '__main__':
-    from verifiable_claims.issuer.cert_issuer import config
+    from verifiable_claims.issuer import config
 
     try:
         parsed_config = config.get_config()

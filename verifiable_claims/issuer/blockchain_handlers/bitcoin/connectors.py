@@ -17,8 +17,8 @@ from pycoin.services.insight import InsightProvider
 from pycoin.services.providers import service_provider_methods
 from pycoin.tx.Spendable import Spendable
 
-from verifiable_claims.issuer.cert_issuer import helpers
-from verifiable_claims.issuer.cert_issuer.errors import BroadcastError
+from verifiable_claims.issuer import helpers
+from verifiable_claims.issuer.errors import BroadcastError
 
 try:
     from urllib2 import urlopen, HTTPError

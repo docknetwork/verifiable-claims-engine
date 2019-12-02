@@ -3,12 +3,12 @@ import os
 from typing import Generator, Dict, Tuple
 
 from cert_core import Chain
-from verifiable_claims.issuer.cert_issuer.merkle_tree_generator import MerkleTreeGenerator
+from verifiable_claims.issuer.merkle_tree_generator import MerkleTreeGenerator
 from cert_schema import normalize_jsonld
 from eth_account.datastructures import AttributeDict
 from web3 import Web3
 
-from verifiable_claims.issuer.cert_issuer.helpers import _get_random_from_csv
+from verifiable_claims.issuer.helpers import _get_random_from_csv
 
 
 class SimplifiedCertificateBatchIssuer:

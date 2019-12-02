@@ -2,8 +2,8 @@ import rlp
 from ethereum import transactions
 from ethereum.utils import encode_hex
 
-from verifiable_claims.issuer.cert_issuer.errors import UnableToSignTxError
-from verifiable_claims.issuer.cert_issuer.models import Signer
+from verifiable_claims.issuer.errors import UnableToSignTxError
+from verifiable_claims.issuer.models import Signer
 
 
 class EthereumSigner(Signer):

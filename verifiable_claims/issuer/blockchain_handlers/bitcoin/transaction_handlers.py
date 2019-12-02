@@ -3,11 +3,11 @@ import random
 
 from pycoin.serialize import b2h
 
-from verifiable_claims.issuer.cert_issuer.blockchain_handlers.bitcoin import tx_utils
-from verifiable_claims.issuer.cert_issuer.config import ESTIMATE_NUM_INPUTS, V2_NUM_OUTPUTS
-from verifiable_claims.issuer.cert_issuer.errors import InsufficientFundsError
-from verifiable_claims.issuer.cert_issuer.models import TransactionCreator, TransactionHandler
-from verifiable_claims.issuer.cert_issuer.signer import FinalizableSigner
+from verifiable_claims.issuer.blockchain_handlers.bitcoin import tx_utils
+from verifiable_claims.issuer.config import ESTIMATE_NUM_INPUTS, V2_NUM_OUTPUTS
+from verifiable_claims.issuer.errors import InsufficientFundsError
+from verifiable_claims.issuer.models import TransactionCreator, TransactionHandler
+from verifiable_claims.issuer.signer import FinalizableSigner
 
 
 class TransactionV2Creator(TransactionCreator):

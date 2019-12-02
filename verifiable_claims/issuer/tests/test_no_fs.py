@@ -1,4 +1,4 @@
-from verifiable_claims.issuer.cert_issuer.simple import SimplifiedCertificateBatchIssuer
+from verifiable_claims.issuer.simple import SimplifiedCertificateBatchIssuer
 
 
 def test_simplfied_issuing_process(config, unsigned_certs, write_private_key_file):

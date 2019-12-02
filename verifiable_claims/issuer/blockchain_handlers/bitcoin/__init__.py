@@ -4,13 +4,16 @@ import os
 from cert_core import BlockchainType
 from cert_core import Chain, UnknownChainError
 
-from verifiable_claims.issuer.cert_issuer.blockchain_handlers.bitcoin.connectors import BitcoinServiceProviderConnector, MockServiceProviderConnector
-from verifiable_claims.issuer.cert_issuer.blockchain_handlers.bitcoin.signer import BitcoinSigner
-from verifiable_claims.issuer.cert_issuer.blockchain_handlers.bitcoin.transaction_handlers import BitcoinTransactionHandler
-from verifiable_claims.issuer.cert_issuer.certificate_handlers import CertificateBatchHandler, CertificateV2Handler, CertificateBatchWebHandler, CertificateWebV2Handler
-from verifiable_claims.issuer.cert_issuer.merkle_tree_generator import MerkleTreeGenerator
-from verifiable_claims.issuer.cert_issuer.models import MockTransactionHandler
-from verifiable_claims.issuer.cert_issuer.signer import FileSecretManager
+from verifiable_claims.issuer.blockchain_handlers.bitcoin.connectors import BitcoinServiceProviderConnector, \
+    MockServiceProviderConnector
+from verifiable_claims.issuer.blockchain_handlers.bitcoin.signer import BitcoinSigner
+from verifiable_claims.issuer.blockchain_handlers.bitcoin.transaction_handlers import BitcoinTransactionHandler
+from verifiable_claims.issuer.certificate_handlers import CertificateBatchHandler, CertificateV2Handler, \
+    CertificateBatchWebHandler, \
+    CertificateWebV2Handler
+from verifiable_claims.issuer.merkle_tree_generator import MerkleTreeGenerator
+from verifiable_claims.issuer.models import MockTransactionHandler
+from verifiable_claims.issuer.signer import FileSecretManager
 
 COIN = 100000000  # satoshis in 1 btc
 
@@ -43,6 +46,7 @@ def initialize_signer(app_config):
                                        safe_mode=app_config.safe_mode, issuing_address=app_config.issuing_address)
     return secret_manager
 
+
 def instantiate_blockchain_handlers(app_config, file_mode=True):
     issuing_address = app_config.issuing_address
     chain = app_config.chain
@@ -54,8 +58,8 @@ def instantiate_blockchain_handlers(app_config, file_mode=True):
                                                             merkle_tree=MerkleTreeGenerator())
     else:
         certificate_batch_handler = CertificateBatchWebHandler(secret_manager=secret_manager,
-                                                        certificate_handler=CertificateWebV2Handler(),
-                                                        merkle_tree=MerkleTreeGenerator())
+                                                               certificate_handler=CertificateWebV2Handler(),
+                                                               merkle_tree=MerkleTreeGenerator())
     if chain == Chain.mockchain:
         transaction_handler = MockTransactionHandler()
         connector = MockServiceProviderConnector()

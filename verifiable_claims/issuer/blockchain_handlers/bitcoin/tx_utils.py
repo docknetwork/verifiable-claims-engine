@@ -14,7 +14,7 @@ from bitcoin.core.script import OP_RETURN
 from bitcoin.wallet import CBitcoinAddress
 from pycoin.tx.Tx import Tx, TxOut
 
-from verifiable_claims.issuer.cert_issuer.errors import UnverifiedTransactionError
+from verifiable_claims.issuer.errors import UnverifiedTransactionError
 
 BYTES_PER_INPUT = 148  # assuming compressed public key
 BYTES_PER_OUTPUT = 34
