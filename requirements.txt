@@ -34,3 +34,5 @@ coincurve==7.1.0
 ethereum==2.3.1
 rlp<1
 
+# BITCOIN:
+python-bitcoinlib>=0.10.1

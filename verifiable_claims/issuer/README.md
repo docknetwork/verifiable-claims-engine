@@ -1,147 +1,8 @@
-[![Build Status](https://travis-ci.org/blockchain-certificates/cert-issuer.svg?branch=master)](https://travis-ci.org/blockchain-certificates/cert-issuer)
-[![PyPI version](https://badge.fury.io/py/cert-issuer.svg)](https://badge.fury.io/py/cert-issuer)
-
-
 # cert-issuer
 
 The cert-issuer project issues blockchain certificates by creating a transaction from the issuing institution to the
 recipient on the Bitcoin blockchain that includes the hash of the certificate itself. 
 
-# Quick start using Docker
-
-## Getting the Docker image
-This uses bitcoind in regtest mode. This route makes many simplifications to allow a quick start, and is intended for
-experimenting only.
-
-1. First ensure you have Docker installed. [See our Docker installation help](docs/docker_install.md).
-
-2. Clone the repo and change to the directory
-
-    ```
-    git clone https://github.com/blockchain-certificates/cert-issuer.git && cd cert-issuer
-    ```
-
-
-3. From a command line in cert-issuer dir, build your docker container:
-    
-    ```
-    docker build -t bc/cert-issuer:1.0 .
-    ```
-
-    Optionally, the following image can built which is web-enabled.  This will expose port 80 inside the container and receive web requests, passing each requests to cert_issuer.
-
-    ```
-    docker build -t bc/cert-issuer:1.0 -f Dockerfile.web .
-    ```
-
-    Additionally, build args can be passed to the container at build time, for example:
-    ```
-    docker build -t bc/cert-issuer:1.0 -f Dockerfile.web . --build-arg NETWORK=testnet --build-arg SERVER=ec2-31-415-59-265.us-west-1.compute.amazonaws.com
-    ```
-
-    The list of build-args and the default values are as follows:
-    ```
-    NETWORK=regtest 
-    RPC_USER=foo
-    RPC_PASSWORD=bar
-    ISSUER=<issuing-address>
-    SERVER=<server-name>
-    ```
-
-4. Read before running!
-
-    - Once you launch the docker container, you will make some changes using your personal issuing information. This flow mirrors what you would if you were issuing real certificates.
-    - To avoid losing your work, you should create snapshots of your docker container. You can do this by running:
-
-        ```
-        docker ps -l
-        docker commit <container for your bc/cert-issuer> my_cert_issuer
-        ```
-
-5. When you're ready to run:
-
-    ```
-    docker run -it bc/cert-issuer:1.0 bash
-    ```
-
-    If you built the web container, you'll need to expose the required ports at run time:
-
-
-    ```
-    sudo docker run -it -p 80:80 bc/cert-issuer:1.0
-    ```
-
-    to create a named volume to persist the blockchain state across the container lifespan:
-
-    ```
-    sudo docker run -it -v cert-issuer:/root/.bitcoin -p 80:80 bc/cert-issuer:1.0
-    ```
-
-## Create issuing address
-
-__Important__: this is a simplification to avoid using a USB, which needs to be inserted and removed during the
-standard certficate issuing process. Do not use these addresses or private keys for anything other than experimenting.
-
-Ensure your docker image is running and bitcoind process is started
-
-1. Create an 'issuing address' and save the output as follows:
-
-    ```
-    issuer=`bitcoin-cli getnewaddress`
-    sed -i.bak "s/<issuing-address>/$issuer/g" /etc/cert-issuer/conf.ini
-    bitcoin-cli dumpprivkey $issuer > /etc/cert-issuer/pk_issuer.txt
-    ```
-    
-2. Don't forget to save snapshots so you don't lose your work (see step 3 of client setup)
-
-## Issuing certificates
-
-1. Add your certificate to /etc/cert-issuer/data/unsigned_certificates/. 
-
-    ```
-    # To use a sample unsigned certificate as follows:
-    cp /cert-issuer/examples/data-testnet/unsigned_certificates/3bc1a96a-3501-46ed-8f75-49612bbac257.json /etc/cert-issuer/data/unsigned_certificates/ 
-    
-    # If you created your own unsigned certificate using cert-tools (assuming you placed it under data/unsigned_certificates):
-    cp <cert-issuer-home>/data/unsigned_certificates/<your-cert-guid>.json /etc/cert-issuer/data/unsigned_certificates/
-    ```
-
-    Alternatively, if the web image was build, a post request can be issued.  Please read the additonal instructions for configuring the web server.
-
-    ```
-    POST http://<server address>/cert_issuer/api/v1.0/issue
-    ```
-
-    The above post request will return a JSON signature that can be used as proof of issuance.
-
-2. Make sure you have enough BTC in your issuing address.
-
-    a. You're using bitcoind in regtest mode, so you can print money. This should give you 50 (fake) BTC:
-
-    ```
-    bitcoin-cli generate 101
-    bitcoin-cli getbalance
-    ```
-
-    b. Send the money to your issuing address -- note that bitcoin-cli's standard denomination is bitcoins not satoshis! (In our
-    app, the standard unit is satoshis.) This command sends 5 bitcoins to the address
-
-    ```
-    bitcoin-cli sendtoaddress $issuer 5
-    ```
-
-3. Issue the certificates on the blockchain
-
-    ```
-    cert-issuer -c /etc/cert-issuer/conf.ini
-    ```
-    
-4. Your Blockchain certificates are located in `/etc/cert-issuer/data/blockchain_certificates`. Copy these to your local machine, and add them to cert-viewer's `cert_data` folder to see your certificates in the Certificate Viewer.
-
-```
-docker ps  // shows the docker containerId
-docker cp <containerId>:/etc/cert-issuer/data/blockchain_certificates <localPath>/cert-viewer/cert_data
-```
 
 # How batch issuing works
 
@@ -290,33 +151,6 @@ Note ensure you've transferred sufficient funds to your issuing address to cover
    - For __Ethereum__: https://myetherwallet.github.io/knowledge-base/getting-started/getting-started-new.html - MyEtherWallet's knowledge base getting started entry. 
 - Transfer a small amount of money to the issuer address created in step 1.
 
-
-## Configuring cert-issuer 
-
-Edit your conf.ini file (the config file for this application). 
-
-```
-issuing_address = <issuing-address>
-
-chain=<bitcoin_regtest|bitcoin_testnet|bitcoin_mainnet|ethereum_ropsten|ethereum_mainnet|mockchain>
-    
-usb_name = </Volumes/path-to-usb/>
-key_file = <file-you-saved-pk-to>
-
-unsigned_certificates_dir=<path-to-your-unsigned-certificates>
-blockchain_certificates_dir=<path-to-your-blockchain-certificates>
-work_dir=<path-to-your-workdir>
-
-no_safe_mode
-
-# advanced: uncomment the following line if you're running a bitcoin node
-# bitcoind
-```
-
-Notes:
-  - The `bitcoind` option is technically not required in `regtest` mode. `regtest` mode _only_ works with a local bitcoin node. The quick start in docker brushed over this detail by installing a regtest-configured bitcoin node in the docker container.
-  - The Ethereum option does not support a local (test)node currently. The issuer will broadcast the transaction via the Etherscan API.
-
 ## Issuing
 
 1. Add your certificates to data/unsigned_certs/
@@ -371,7 +205,7 @@ It is used exclusively by `CertificateBatchHandler` to handle certificate-level 
 - `get_byte_array_to_issue`: return byte array that will be hashed, hex-digested and added to the Merkle Tree
 - `add_proof`: associate a a proof with a certificate (in the current implementation, the proof is embedded in the file)
 
-`TransactionHandler` deals with putting the data on the blockchain. Currently only a Bitcoin implementation exists
+`TransactionHandler` deals with putting the data on the blockchain. Currently only a Bitcoin and an Ethereum implementation exist.
 
 ## Signing and secret management
 
@@ -401,10 +235,6 @@ This class structure is intended to be general-purpose to allow other implementa
 # Advanced setup
 - [Installing and using a local bitcoin node](docs/bitcoind.md)
 
-# Examples
-
-The files in examples/data-testnet contain results of previous runs. 
-
 # FAQs
 
 ## Checking transaction status
@@ -421,7 +251,7 @@ output.  To view a transaction in a web browser, you might try something like th
 - Ethereum Mainnet: https://etherscan.io/tx/0xf537d81667c8011e34e1f450e18fd1c5a8a10c770cd0acdc91a79746696f36a3
 - Ethereum Ropsten (testnet): https://ropsten.etherscan.io/tx/0xf537d81667c8011e34e1f450e18fd1c5a8a10c770cd0acdc91a79746696f36a3
 
-## Mac scrypt problems
+## Mac script problems
 
 If your install on Mac is failing with a message like the following, try the [workaround described in this thread](https://github.com/ethereum/pyethereum/issues/292).
 
@@ -430,9 +260,3 @@ fatal error: 'openssl/aes.h'
       file not found
 #include <openssl/aes.h>
 ```
-
-# Contact
-
-Contact us at [the Blockcerts community forum](http://community.blockcerts.org/).
-
-
