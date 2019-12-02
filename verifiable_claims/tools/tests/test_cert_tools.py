@@ -1,8 +1,5 @@
-import json
-import os
-
 from verifiable_claims.tools.cert_tools.create_v2_certificate_template import create_certificate_template
-from verifiable_claims.tools.cert_tools.create_v2_issuer import generate_issuer, generate_issuer_file
+from verifiable_claims.tools.cert_tools.create_v2_issuer import generate_issuer
 from verifiable_claims.tools.cert_tools.instantiate_v2_certificate_batch import create_unsigned_certificates_from_roster
 
 
@@ -73,21 +70,6 @@ def test_create_v2_certificate_template_no_files(config_no_files):
     }
 
 
-def test_create_v2_certificate_template_both_match(config_no_files, config_with_files):
-    template_no_files = create_certificate_template(config_no_files)
-    template_with_files = create_certificate_template(config_with_files)
-
-    written_template_path = os.path.join(
-        config_with_files['abs_data_dir'],
-        config_with_files['template_dir'],
-        config_with_files['template_file_name']
-    )
-    with open(written_template_path, 'r') as written_file:
-        written_template = json.loads(written_file.read())
-
-    assert template_no_files == template_with_files == written_template
-
-
 def test_create_v2_issuer_no_files(config_no_files):
     issuer = generate_issuer(config_no_files)
     assert issuer == {
@@ -110,17 +92,6 @@ def test_create_v2_issuer_no_files(config_no_files):
         'type': 'Profile',
         'introductionUrl': 'https://www.issuer.org/about'
     }
-
-
-def test_create_v2_issuer_both_match(config_no_files, config_with_files):
-    config_no_files['output_file'] = 'issuer.json'
-    issuer_no_files = generate_issuer(config_no_files)
-    issuer_with_files = generate_issuer(config_with_files)
-
-    generate_issuer_file(config_no_files, issuer_no_files)
-    with open(config_no_files['output_file'], 'r') as written_file:
-        written_issuer = json.loads(written_file.read())
-    assert issuer_no_files == issuer_with_files == written_issuer
 
 
 def test_create_v2_certificate_no_files(config_no_files, recipients):
