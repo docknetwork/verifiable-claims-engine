@@ -11,7 +11,7 @@ import sys
 import configargparse
 from cert_schema import *
 
-from verifiable_claims.tools.cert_tools import helpers
+from verifiable_claims.tools import helpers
 
 ISSUER_TYPE = 'Profile'
 

@@ -9,8 +9,8 @@ from verifiable_claims.const import PLACEHOLDER_RECIPIENT_NAME, PLACEHOLDER_RECI
     ETH_PRIVATE_KEY_PATH, ETH_PRIVATE_KEY_FILE_NAME, \
     HTML_PLACEHOLDERS, RECIPIENT_NAME_KEY, RECIPIENT_EMAIL_KEY
 from verifiable_claims.issuer.simple import SimplifiedCertificateBatchIssuer
-from verifiable_claims.tools.cert_tools.create_v2_certificate_template import create_certificate_template
-from verifiable_claims.tools.cert_tools.instantiate_v2_certificate_batch import create_unsigned_certificates_from_roster
+from verifiable_claims.tools.create_v2_certificate_template import create_certificate_template
+from verifiable_claims.tools.instantiate_v2_certificate_batch import create_unsigned_certificates_from_roster
 
 
 def write_private_key_file(private_key: str) -> None:

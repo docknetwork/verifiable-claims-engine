@@ -11,9 +11,8 @@ import configargparse
 from cert_core.cert_model.model import scope_name
 from cert_schema import OPEN_BADGES_V2_CANONICAL_CONTEXT, BLOCKCERTS_V2_CANONICAL_CONTEXT
 
-from verifiable_claims.tools.cert_tools import helpers
-from verifiable_claims.tools.cert_tools import jsonpath_helpers
-from verifiable_claims.tools.cert_tools.helpers import get_b64encoded_image
+from verifiable_claims.tools import helpers, jsonpath_helpers
+from verifiable_claims.tools.helpers import get_b64encoded_image
 
 OPEN_BADGES_V2_CONTEXT = OPEN_BADGES_V2_CANONICAL_CONTEXT
 BLOCKCERTS_V2_CONTEXT = BLOCKCERTS_V2_CANONICAL_CONTEXT

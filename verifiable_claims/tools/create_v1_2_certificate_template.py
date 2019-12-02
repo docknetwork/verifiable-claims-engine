@@ -8,8 +8,7 @@ import os
 
 import configargparse
 
-from verifiable_claims.tools.cert_tools import helpers
-from verifiable_claims.tools.cert_tools import jsonpath_helpers
+from verifiable_claims.tools import helpers, jsonpath_helpers
 
 
 def create_certificate_section(config):

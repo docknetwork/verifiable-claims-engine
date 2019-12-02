@@ -16,8 +16,7 @@ import configargparse
 
 from cert_schema import schema_validator
 
-from verifiable_claims.tools.cert_tools import helpers
-from verifiable_claims.tools.cert_tools import jsonpath_helpers
+from verifiable_claims.tools import helpers, jsonpath_helpers
 
 
 class Recipient:
