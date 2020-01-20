@@ -60,7 +60,7 @@ def issue_certificate_batch(issuer_data: AttrDict, template_data: AttrDict, reci
     )
     simple_certificate_batch_issuer = SimplifiedCertificateBatchIssuer(issuer_config, unsigned_certs)
     tx_id, signed_certs = simple_certificate_batch_issuer.issue()
-    return list(signed_certs.values())
+    return tx_id, signed_certs
 
 
 def get_job_config(job_data: AttrDict) -> AttrDict:

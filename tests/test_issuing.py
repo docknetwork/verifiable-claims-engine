@@ -6,14 +6,14 @@ from blockcerts.misc import issue_certificate_batch, format_recipients
 
 
 def test_issuing(app, issuer, template, three_recipients, job):
-    issued_certs = issue_certificate_batch(issuer, template, three_recipients, job)
-    assert isinstance(issued_certs, list)
+    tx_id, issued_certs = issue_certificate_batch(issuer, template, three_recipients, job)
+    assert isinstance(issued_certs, dict)
     assert len(issued_certs) == 3
 
 
 def test_issuing_custom_keypair(app, issuer, template, three_recipients, job_custom_keypair_1):
-    issued_certs = issue_certificate_batch(issuer, template, three_recipients, job_custom_keypair_1)
-    assert isinstance(issued_certs, list)
+    tx_id, issued_certs = issue_certificate_batch(issuer, template, three_recipients, job_custom_keypair_1)
+    assert isinstance(issued_certs, dict)
     assert len(issued_certs) == 3
 
 
@@ -27,11 +27,13 @@ def test_issuing_endpoint(app, issuer, template, three_recipients, job, json_cli
             job=job
         )
     )
-    assert isinstance(response.json, list)
-    assert len(response.json) == 3
-    assert 'expires' not in response.json[0].keys()
-    assert 'expires' not in response.json[1].keys()
-    assert 'expires' not in response.json[2].keys()
+    assert isinstance(response.json, dict)
+    signed_certificates = response.json['signed_certificates']
+    assert isinstance(signed_certificates, list)
+    assert len(signed_certificates) == 3
+    assert 'expires' not in signed_certificates[0].keys()
+    assert 'expires' not in signed_certificates[1].keys()
+    assert 'expires' not in signed_certificates[2].keys()
 
 
 def test_issuing_endpoint_empty_recipients(app, issuer, template, job, json_client):
@@ -131,11 +133,14 @@ def test_issuing_endpoint_with_expiration(app, issuer, template, three_recipient
             job=job
         )
     )
-    assert isinstance(response.json, list)
-    assert len(response.json) == 3
-    assert response.json[0]['expires']
-    assert response.json[1]['expires']
-    assert response.json[2]['expires']
+
+    assert isinstance(response.json, dict)
+    signed_certificates = response.json['signed_certificates']
+    assert isinstance(signed_certificates, list)
+    assert len(signed_certificates) == 3
+    assert signed_certificates[0]['expires']
+    assert signed_certificates[1]['expires']
+    assert signed_certificates[2]['expires']
 
 
 def test_recipient_specific_html_creation(app, issuer, template, three_recipients, json_client):
@@ -163,8 +168,11 @@ def test_issuing_endpoint_custom_keys(app, issuer, template, three_recipients, j
             job=job
         )
     )
-    assert isinstance(response.json, list)
-    assert len(response.json) == 3
+
+    assert isinstance(response.json, dict)
+    signed_certificates = response.json['signed_certificates']
+    assert isinstance(signed_certificates, list)
+    assert len(signed_certificates) == 3
 
     response_1 = json_client.post(
         url_for('issue_certs', _external=True),
@@ -175,8 +183,11 @@ def test_issuing_endpoint_custom_keys(app, issuer, template, three_recipients, j
             job=job_custom_keypair_1
         )
     )
-    assert isinstance(response_1.json, list)
-    assert len(response_1.json) == 3
+
+    assert isinstance(response_1.json, dict)
+    signed_certificates_1 = response_1.json['signed_certificates']
+    assert isinstance(signed_certificates_1, list)
+    assert len(signed_certificates_1) == 3
 
     response_2 = json_client.post(
         url_for('issue_certs', _external=True),
@@ -187,8 +198,11 @@ def test_issuing_endpoint_custom_keys(app, issuer, template, three_recipients, j
             job=job_custom_keypair_2
         )
     )
-    assert isinstance(response_2.json, list)
-    assert len(response_2.json) == 3
 
-    assert response.json[0]['verification']['publicKey'] != response_1.json[0]['verification']['publicKey'] != \
-           response_2.json[0]['verification']['publicKey']
+    assert isinstance(response_2.json, dict)
+    signed_certificates_2 = response_2.json['signed_certificates']
+    assert isinstance(signed_certificates_2, list)
+    assert len(signed_certificates_2) == 3
+
+    assert signed_certificates[0]['verification']['publicKey'] != signed_certificates_1[0]['verification'][
+        'publicKey'] != signed_certificates_2[0]['verification']['publicKey']

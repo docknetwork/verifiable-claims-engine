@@ -25,13 +25,16 @@ def setup_routes(app):
             extra=REMOVE_EXTRA,
         )
         payload = issuing_job_schema(request.get_json())
-        batch = issue_certificate_batch(
+        tx_id, signed_certs = issue_certificate_batch(
             AttrDict(payload['issuer']),
             AttrDict(payload['template']),
             [AttrDict(rec) for rec in payload['recipients']],
             AttrDict(payload['job']),
         )
-        return jsonify(batch)
+        return jsonify(dict(
+            tx_id=tx_id,
+            signed_certificates=list(signed_certs.values())
+        ))
 
     @app.route('/config', methods=['GET'])
     def public_config():
