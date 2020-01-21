@@ -25,6 +25,7 @@ def app():
             'TESTING': True,
             'DEBUG': True,
             'BLOCKCHAIN': 'ethereum_ropsten',
+            'ETH_NODE_URL_ROPSTEN': os.environ.get('ETH_NODE_URL_ROPSTEN'),
             'ETH_PUBLIC_KEY': os.environ.get('ETH_PUBLIC_KEY'),
             'ETH_PRIVATE_KEY': os.environ.get('ETH_PRIVATE_KEY'),
             'ETH_KEY_CREATED_AT': os.environ.get('ETH_KEY_CREATED_AT'),

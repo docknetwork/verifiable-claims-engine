@@ -3,6 +3,8 @@ from datetime import datetime
 from typing import List
 
 from attrdict import AttrDict
+from web3 import Web3
+from web3.exceptions import TransactionNotFound
 
 from blockcerts.const import HTML_DATE_FORMAT, PLACEHOLDER_RECIPIENT_NAME, PLACEHOLDER_RECIPIENT_EMAIL, \
     PLACEHOLDER_ISSUING_DATE, PLACEHOLDER_ISSUER_LOGO, PLACEHOLDER_ISSUER_SIGNATURE_FILE, PLACEHOLDER_EXPIRATION_DATE, \
@@ -60,7 +62,7 @@ def issue_certificate_batch(issuer_data: AttrDict, template_data: AttrDict, reci
     )
     simple_certificate_batch_issuer = SimplifiedCertificateBatchIssuer(issuer_config, unsigned_certs)
     tx_id, signed_certs = simple_certificate_batch_issuer.issue()
-    return list(signed_certs.values())
+    return tx_id, signed_certs
 
 
 def get_job_config(job_data: AttrDict) -> AttrDict:
@@ -143,3 +145,44 @@ def format_recipients(recipients_data: List, template_data: AttrDict, issuer_dat
                 recipient, template_data, issuer_data
             )
     return recipients_data
+
+
+def get_tx_receipt(chain: str, tx_id: str) -> dict:
+    """
+    Get a tx receipt given its hash.
+
+    :param chain: One of mainnet or ropsten
+    :param tx_id: Transaction hash.
+    :return: dict with tx receipt.
+    """
+    config = get_config()
+    if chain.lower() == 'mainnet':
+        provider = config.get('ETH_NODE_URL_MAINNET')
+    elif chain.lower() == 'ropsten':
+        provider = config.get('ETH_NODE_URL_ROPSTEN')
+    else:
+        raise ValidationError(f"Unknown chain '{chain}'.")
+
+    if not provider:
+        raise ValidationError(f"Node url for chain '{chain}' not found in config.")
+
+    web3 = Web3(Web3.HTTPProvider(provider))
+    assert web3.isConnected()
+
+    try:
+        receipt = web3.eth.getTransactionReceipt(tx_id)
+    except TransactionNotFound:
+        raise ValidationError(f"Transaction with hash '{tx_id}' not found.")
+
+    return _safe_hex_attribute_dict(receipt)
+
+
+def _safe_hex_attribute_dict(hex_attrdict: AttrDict) -> dict:
+    """Convert any 'AttributeDict' type found to 'dict'."""
+    parsed_dict = dict(hex_attrdict)
+    for key, val in parsed_dict.items():
+        if 'dict' in str(type(val)).lower():
+            parsed_dict[key] = _safe_hex_attribute_dict(val)
+        elif 'HexBytes' in str(type(val)):
+            parsed_dict[key] = val.hex()
+    return parsed_dict
