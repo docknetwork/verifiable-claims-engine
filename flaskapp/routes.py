@@ -3,7 +3,7 @@ from flask import jsonify, request
 from voluptuous import Schema, REMOVE_EXTRA
 
 from blockcerts.const import ISSUER_SCHEMA, TEMPLATE_SCHEMA, RECIPIENT_SCHEMA, JOB_SCHEMA
-from blockcerts.misc import issue_certificate_batch
+from blockcerts.misc import issue_certificate_batch, get_tx_receipt
 from flaskapp.config import get_config
 
 
@@ -45,3 +45,10 @@ def setup_routes(app):
                 ETH_KEY_CREATED_AT=config.get('ETH_KEY_CREATED_AT'),
             )
         )
+
+    @app.route('/tx/<chain>/<tx_id>', methods=['GET'])
+    def tx_receipt(chain, tx_id):
+        receipt = get_tx_receipt(chain, tx_id)
+        if receipt:
+            return jsonify(dict(receipt)), 200
+        return f"Tx '{tx_id}' not found in chain '{chain}'.", 404

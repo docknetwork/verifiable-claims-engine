@@ -1,8 +1,10 @@
+from unittest import mock
+
 import pytest
 from flask import url_for
 
 from blockcerts.const import RECIPIENT_NAME_KEY, RECIPIENT_EMAIL_KEY
-from blockcerts.misc import issue_certificate_batch, format_recipients
+from blockcerts.misc import issue_certificate_batch, format_recipients, get_tx_receipt
 
 
 def test_issuing(app, issuer, template, three_recipients, job):
@@ -206,3 +208,33 @@ def test_issuing_endpoint_custom_keys(app, issuer, template, three_recipients, j
 
     assert signed_certificates[0]['verification']['publicKey'] != signed_certificates_1[0]['verification'][
         'publicKey'] != signed_certificates_2[0]['verification']['publicKey']
+
+
+def test_tx_receipt(app):
+    tx_receipt = get_tx_receipt('ropsten', '0x36d7c25a79b3a32f0bfa59547f837f62ced399a8a700a6f00147ddd5339b2505')
+    assert tx_receipt
+    assert isinstance(tx_receipt, dict)
+
+
+def test_tx_receipt_endpoint(app, json_client):
+    response = json_client.get('/tx/ropsten/0x36d7c25a79b3a32f0bfa59547f837f62ced399a8a700a6f00147ddd5339b2505')
+    assert response
+    assert response.status_code == 200
+    assert response.json['blockHash'] == '0x09f1b0e57f5e6a84280084d39da157cf806b28d090e78159d5e24041d8d93fe2'
+
+
+@mock.patch('flaskapp.routes.get_tx_receipt', return_value=None)
+def test_tx_receipt_endpoint_missing_tx(app, json_client):
+    response = json_client.get('/tx/ropsten/0x36d7c25a79b3a32f0bfa59547f837f62ced399a8a700a6f00147ddd5339b2505')
+    assert not response.json
+    assert response.status_code == 404
+
+
+def test_tx_receipt_endpoint_wrong_tx(app, json_client):
+    wrong_tx_id = '123'
+    response = json_client.get(f'/tx/ropsten/{wrong_tx_id}')
+    assert response.json == {
+        'details': None, 'error': 'validation-error',
+        'key': f"Transaction with hash '{wrong_tx_id}' not found."
+    }
+    assert response.status_code == 400
