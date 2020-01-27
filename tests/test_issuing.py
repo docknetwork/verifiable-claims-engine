@@ -238,3 +238,32 @@ def test_tx_receipt_endpoint_wrong_tx(app, json_client):
         'key': f"Transaction with hash '{wrong_tx_id}' not found."
     }
     assert response.status_code == 400
+
+
+def test_issuing_endpoint_with_per_recipient_expiration(app, issuer, template, three_recipients, job, json_client):
+    three_recipients[0].additional_fields = {'expires': '2018-01-07T23:52:16.636+00:00'}
+    three_recipients[1].additional_fields = {'expires': '2028-02-07T23:52:16.636+00:00'}
+    three_recipients[2].additional_fields = {'expires': '2038-03-07T23:52:16.636+00:00'}
+    template.additional_per_recipient_fields = (
+        template.additional_per_recipient_fields[0],
+        {"path": "$.expires", "value": "", "csv_column": "expires"}
+    )
+
+    response = json_client.post(
+        url_for('issue_certs', _external=True),
+        data=dict(
+            issuer=issuer,
+            template=template,
+            recipients=three_recipients,
+            job=job
+        )
+    )
+
+    assert isinstance(response.json, dict)
+    signed_certificates = response.json['signed_certificates']
+    assert isinstance(signed_certificates, list)
+    assert len(signed_certificates) == 3
+
+    assert signed_certificates[0]['expires'] == three_recipients[0].additional_fields['expires']
+    assert signed_certificates[1]['expires'] == three_recipients[1].additional_fields['expires']
+    assert signed_certificates[2]['expires'] == three_recipients[2].additional_fields['expires']
