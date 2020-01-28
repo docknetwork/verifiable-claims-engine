@@ -9,7 +9,7 @@ from web3.exceptions import TransactionNotFound
 from blockcerts.const import HTML_DATE_FORMAT, PLACEHOLDER_RECIPIENT_NAME, PLACEHOLDER_RECIPIENT_EMAIL, \
     PLACEHOLDER_ISSUING_DATE, PLACEHOLDER_ISSUER_LOGO, PLACEHOLDER_ISSUER_SIGNATURE_FILE, PLACEHOLDER_EXPIRATION_DATE, \
     PLACEHOLDER_CERT_TITLE, PLACEHOLDER_CERT_DESCRIPTION, ETH_PRIVATE_KEY_PATH, ETH_PRIVATE_KEY_FILE_NAME, \
-    HTML_PLACEHOLDERS, RECIPIENT_NAME_KEY, RECIPIENT_EMAIL_KEY
+    HTML_PLACEHOLDERS, RECIPIENT_NAME_KEY, RECIPIENT_EMAIL_KEY, RECIPIENT_ADDITIONAL_FIELDS_KEY, RECIPIENT_EXPIRES_KEY
 from blockcerts.issuer.cert_issuer.simple import SimplifiedCertificateBatchIssuer
 from blockcerts.tools.cert_tools.create_v2_certificate_template import create_certificate_template
 from blockcerts.tools.cert_tools.instantiate_v2_certificate_batch import create_unsigned_certificates_from_roster
@@ -25,7 +25,8 @@ def write_private_key_file(private_key: str) -> None:
 
 def get_display_html_for_recipient(recipient: AttrDict, template: AttrDict, issuer: AttrDict) -> str:
     """Take the template's displayHtml and replace placeholders in it."""
-    expiration = recipient.get('additional_fields', {}).get('expires') or template.get('expires_at') or 'None'
+    expiration = recipient.get(RECIPIENT_ADDITIONAL_FIELDS_KEY, {}).get(RECIPIENT_EXPIRES_KEY) or template.get(
+        'expires_at') or 'None'
     result = copy.deepcopy(template.display_html)
     replacements = [
         (PLACEHOLDER_RECIPIENT_NAME, recipient.get(RECIPIENT_NAME_KEY)),
@@ -37,6 +38,11 @@ def get_display_html_for_recipient(recipient: AttrDict, template: AttrDict, issu
         (PLACEHOLDER_CERT_TITLE, template.title),
         (PLACEHOLDER_CERT_DESCRIPTION, template.description),
     ]
+    for key in recipient.get(RECIPIENT_ADDITIONAL_FIELDS_KEY, {}).keys():
+        if not key == RECIPIENT_EXPIRES_KEY:
+            replacements.append(
+                (f"%{key.upper()}%", recipient.get(RECIPIENT_ADDITIONAL_FIELDS_KEY, {}).get(key))
+            )
     for key, value in replacements:
         if value:
             result = result.replace(key, value)
@@ -141,7 +147,7 @@ def format_recipients(recipients_data: List, template_data: AttrDict, issuer_dat
     """Replace placeholders with the right data the given template uses them in display_html."""
     if any(word in template_data.display_html for word in HTML_PLACEHOLDERS):
         for recipient in recipients_data:
-            recipient['additional_fields']['displayHtml'] = get_display_html_for_recipient(
+            recipient[RECIPIENT_ADDITIONAL_FIELDS_KEY]['displayHtml'] = get_display_html_for_recipient(
                 recipient, template_data, issuer_data
             )
     return recipients_data
