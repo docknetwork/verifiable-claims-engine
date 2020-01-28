@@ -25,7 +25,7 @@ def write_private_key_file(private_key: str) -> None:
 
 def get_display_html_for_recipient(recipient: AttrDict, template: AttrDict, issuer: AttrDict) -> str:
     """Take the template's displayHtml and replace placeholders in it."""
-    expiration = template.get('expires_at') or 'None'
+    expiration = recipient.get('additional_fields', {}).get('expires') or template.get('expires_at') or 'None'
     result = copy.deepcopy(template.display_html)
     replacements = [
         (PLACEHOLDER_RECIPIENT_NAME, recipient.get(RECIPIENT_NAME_KEY)),
