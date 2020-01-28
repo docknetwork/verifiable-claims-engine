@@ -233,16 +233,6 @@ def test_tx_receipt_endpoint_missing_tx(app, json_client):
     assert response.status_code == 404
 
 
-def test_tx_receipt_endpoint_wrong_tx(app, json_client):
-    wrong_tx_id = '123'
-    response = json_client.get(f'/tx/ropsten/{wrong_tx_id}')
-    assert response.json == {
-        'details': None, 'error': 'validation-error',
-        'key': f"Transaction with hash '{wrong_tx_id}' not found."
-    }
-    assert response.status_code == 400
-
-
 def test_issuing_endpoint_with_per_recipient_expiration(app, issuer, template, three_recipients, job_custom_keypair_1,
                                                         json_client):
     three_recipients[0].additional_fields = {'expires': '2018-01-07T23:52:16.636+00:00'}

@@ -172,7 +172,7 @@ def get_tx_receipt(chain: str, tx_id: str) -> dict:
     try:
         receipt = web3.eth.getTransactionReceipt(tx_id)
     except TransactionNotFound:
-        raise ValidationError(f"Transaction with hash '{tx_id}' not found.")
+        return None
 
     return _safe_hex_attribute_dict(receipt)
 
