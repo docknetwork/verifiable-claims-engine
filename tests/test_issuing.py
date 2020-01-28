@@ -162,6 +162,43 @@ def test_recipient_specific_html_creation(app, issuer, template, three_recipient
                                                                       f'"{template.description}"')
 
 
+def test_recipient_specific_html_creation_additional_fields(app, issuer, template, three_recipients, json_client):
+    template.additional_per_recipient_fields = (
+        template.additional_per_recipient_fields[0],
+        {"path": "$.expires", "value": "", "csv_column": "expires"},
+        {"path": "$.some.custom.path", "value": "", "csv_column": "custom_field_1"},
+        {"path": "$.some.other.custom.path", "value": "", "csv_column": "custom_field_2"}
+    )
+    three_recipients[0].additional_fields = {
+        'expires': '2018-01-07T23:52:16.636+00:00', 'custom_field_1': 'foo1', 'custom_field_2': 'bar1'
+    }
+    three_recipients[1].additional_fields = {
+        'expires': '2028-02-07T23:52:16.636+00:00', 'custom_field_1': 'foo2', 'custom_field_2': 'bar2'
+    }
+    three_recipients[2].additional_fields = {
+        'expires': '2038-03-07T23:52:16.636+00:00', 'custom_field_1': 'foo3', 'custom_field_2': 'bar3'
+    }
+    template.expires_at = "3028-02-07T23:52:16.636+00:00"  # This should not matter because of the per-recipient ones
+
+    template.display_html = '"%RECIPIENT_NAME%" - ' \
+                            '"%EXPIRATION_DATE%" - ' \
+                            '"%SOME_WRONG_PLACEHOLDER%" - ' \
+                            '"%CUSTOM_FIELD_1%" - ' \
+                            '"%CUSTOM_FIELD_2%"'
+
+    for recipient in three_recipients:
+        assert not recipient['additional_fields'].get('displayHtml')
+
+    recipients = format_recipients(three_recipients, template, issuer)
+
+    for recipient in recipients:
+        assert recipient['additional_fields']['displayHtml'] == f'"{recipient.get(RECIPIENT_NAME_KEY)}" - ' \
+            f'"{recipient["additional_fields"]["expires"]}" - ' \
+            f'"%SOME_WRONG_PLACEHOLDER%" - ' \
+            f'"{recipient["additional_fields"]["custom_field_1"]}" - ' \
+            f'"{recipient["additional_fields"]["custom_field_2"]}"'
+
+
 def test_issuing_endpoint_custom_keys(app, issuer, template, three_recipients, json_client, job, job_custom_keypair_1,
                                       job_custom_keypair_2):
     response = json_client.post(

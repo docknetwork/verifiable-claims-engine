@@ -4,6 +4,7 @@ RECIPIENT_NAME_KEY = 'name'
 RECIPIENT_EMAIL_KEY = 'identity'
 RECIPIENT_PUBLIC_KEY_KEY = 'pubkey'
 RECIPIENT_ADDITIONAL_FIELDS_KEY = 'additional_fields'
+RECIPIENT_EXPIRES_KEY = 'expires'
 
 ISSUER_SCHEMA = Schema(
     {
