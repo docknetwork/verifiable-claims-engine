@@ -5,3 +5,4 @@ voluptuous==0.11.5
 pytest-flask==0.15.0
 requests==2.22.0
 attrdict==2.0.1
+vcpy==0.0.1
