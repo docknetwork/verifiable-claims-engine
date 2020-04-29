@@ -28,6 +28,7 @@ jobs:
         ETH_KEY_CREATED_AT: ${{ secrets.ETH_KEY_CREATED_AT }}
         ETH_NODE_URL_ROPSTEN: ${{ secrets.ETH_NODE_URL_ROPSTEN }}
         ETH_NODE_URL_MAINNET: ${{ secrets.ETH_NODE_URL_MAINNET }}
+        ETHERSCAN_API_TOKEN: ${{ secrets.ETHERSCAN_API_TOKEN }}
       run: |
         docker build -t verifiable-claims-engine --build-arg DEV=1 .
-        docker run -e DEV -e ETH_PUBLIC_KEY -e ETH_PRIVATE_KEY -e ETH_PUBLIC_KEY_2 -e ETH_PRIVATE_KEY_2 -e ETH_PUBLIC_KEY_3 -e ETH_PRIVATE_KEY_3 -e ETH_KEY_CREATED_AT -e ETH_NODE_URL_ROPSTEN -e ETH_NODE_URL_MAINNET --rm --name verifiable-claims-engine  --mount type=bind,source=$(pwd),target=/app verifiable-claims-engine pytest tests
+        docker run -e DEV -e ETH_PUBLIC_KEY -e ETH_PRIVATE_KEY -e ETH_PUBLIC_KEY_2 -e ETH_PRIVATE_KEY_2 -e ETH_PUBLIC_KEY_3 -e ETH_PRIVATE_KEY_3 -e ETH_KEY_CREATED_AT -e ETH_NODE_URL_ROPSTEN -e ETH_NODE_URL_MAINNET -e ETHERSCAN_API_TOKEN --rm --name verifiable-claims-engine  --mount type=bind,source=$(pwd),target=/app verifiable-claims-engine pytest tests

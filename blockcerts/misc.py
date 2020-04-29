@@ -3,6 +3,8 @@ from datetime import datetime
 from typing import List
 
 from attrdict import AttrDict
+from cert_core import to_certificate_model
+from cert_verifier.verifier import verify_certificate
 from web3 import Web3
 from web3.exceptions import TransactionNotFound
 
@@ -192,3 +194,15 @@ def _safe_hex_attribute_dict(hex_attrdict: AttrDict) -> dict:
         elif 'HexBytes' in str(type(val)):
             parsed_dict[key] = val.hex()
     return parsed_dict
+
+
+def verify_cert(cert_json):
+    """Run verification on the given cert, return a tuple with (overall_result, individual_results)"""
+    config = get_config()
+    certificate_model = to_certificate_model(certificate_json=cert_json)
+    result = verify_certificate(
+        certificate_model,
+        dict(etherscan_api_token=config.get('ETHERSCAN_API_TOKEN', ''))
+    )
+    all_steps_passed = all(d.get('status') == 'passed' for d in result)
+    return all_steps_passed, result
