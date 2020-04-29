@@ -19,6 +19,29 @@ def test_issuing_custom_keypair(app, issuer, template, three_recipients, job_cus
     assert len(issued_certs) == 3
 
 
+def test_verify(app, json_client, issued_cert):
+    response = json_client.post(
+        url_for('verify', _external=True),
+        data=issued_cert
+    )
+    results = response.json
+    assert isinstance(results, dict)
+    assert isinstance(results['steps'], list)
+    assert results['verified'] is True
+
+
+def test_verify_tampered(app, json_client, issued_cert):
+    issued_cert['recipientProfile']['name'] = 'Some Malicious Player Name'
+    response = json_client.post(
+        url_for('verify', _external=True),
+        data=issued_cert
+    )
+    results = response.json
+    assert isinstance(results, dict)
+    assert isinstance(results['steps'], list)
+    assert results['verified'] is False
+
+
 def test_issuing_endpoint(app, issuer, template, three_recipients, job_custom_keypair_2, json_client):
     response = json_client.post(
         url_for('issue_certs', _external=True),

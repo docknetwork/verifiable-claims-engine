@@ -3,7 +3,7 @@ from flask import jsonify, request
 from voluptuous import Schema, REMOVE_EXTRA
 
 from blockcerts.const import ISSUER_SCHEMA, TEMPLATE_SCHEMA, RECIPIENT_SCHEMA, JOB_SCHEMA
-from blockcerts.misc import issue_certificate_batch, get_tx_receipt
+from blockcerts.misc import issue_certificate_batch, get_tx_receipt, verify_cert
 from flaskapp.config import get_config
 
 
@@ -52,3 +52,12 @@ def setup_routes(app):
         if receipt:
             return jsonify(dict(receipt)), 200
         return f"Tx '{tx_id}' not found in chain '{chain}'.", 404
+
+    @app.route('/verify', methods=['POST'])
+    def verify():
+        payload = request.get_json()
+        results = verify_cert(payload)
+        return jsonify(dict(
+            verified=results[0],
+            steps=results[1]
+        ))

@@ -13,6 +13,7 @@ CONFIG_VARS = [
     ('ETH_KEY_CREATED_AT', str, None),
     ('ETH_NODE_URL_ROPSTEN', str, None),
     ('ETH_NODE_URL_MAINNET', str, None),
+    ('ETHERSCAN_API_TOKEN', str, None),
 ]
 
 _global_config = None
