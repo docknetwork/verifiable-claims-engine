@@ -6,6 +6,6 @@ pytest-flask==0.15.0
 requests==2.22.0
 attrdict==2.0.1
 vcpy==0.0.1
-git+git://github.com/faustow/cert-verifier.git#egg=cert-verifier
-git+git://github.com/faustow/cert-core.git#egg=cert-core
+git+git://github.com/docknetwork/cert-verifier.git#egg=cert-verifier
+git+git://github.com/docknetwork/cert-core.git#egg=cert-core
 Werkzeug==0.16.1
