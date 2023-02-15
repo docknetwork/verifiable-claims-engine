@@ -8,4 +8,4 @@ attrdict==2.0.1
 vcpy==0.0.1
 git+git://github.com/docknetwork/cert-verifier.git#egg=cert-verifier
 git+git://github.com/docknetwork/cert-core.git#egg=cert-core
-Werkzeug==0.16.1
+Werkzeug==2.2.3
